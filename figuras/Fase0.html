@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Konva</title>
+        <!-- Implementamos la libreria de kova -->
+        <script src="https://unpkg.com/konva@9/konva.min.js"></script> 
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+                background-color: #f0f0f0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+            }
+            #background {
+                background-color: #e0e0e0;
+                width: 80%;
+                height: 80%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border: 2px solid #ccc;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            #container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            #basePrincipal {
+                background-color: #d3d3d3;
+                width: 400px;
+                height: 400px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-right: 20px;
+            }
+            #buttonContainer {
+                background-color: #d3d3d3;
+                width: 200px;
+                height: 400px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+            }
+            .button {
+                font-size: 20px;
+                padding: 15px 30px;
+                margin: 10px;
+                border: none;
+                border-radius: 5px;
+                background-color: #4CAF50;
+                color: white;
+                cursor: pointer;
+                transition: background-color 0.3s, transform 0.3s;
+            }
+            .button:hover {
+                background-color: #45a049;
+                transform: scale(1.05);
+            }
+            .button:active {
+                background-color: #3e8e41;
+                transform: scale(1);
+            }
+        </style>
+    </head>
+    <body>
+        <div id="background">
+            <div id="container">
+                <div id="basePrincipal"></div>
+                <div id="buttonContainer">
+                    <button id="stopButton" class="button">Parar</button>
+                    <button id="resumeButton" class="button">Reanudar</button>
+                </div>
+            </div>
+        </div>
+        <script>
+            // Lienzo
+            const lienzo = new Konva.Stage({
+                container: 'basePrincipal',
+                width: 400,
+                height: 400
+            });
+
+            // CapaLienzo
+            const capaLienzo = new Konva.Layer();
+            lienzo.add(capaLienzo);
+
+            // Crear circulo
+            var circulo = new Konva.Circle({
+                x: 200,
+                y: 200,
+                radius: 30,
+                fill: 'red',
+                draggable: true
+            });
+            capaLienzo.add(circulo);
+            capaLienzo.draw();
+
+            // Crear botones para parar y reanudar el circulo
+            var stopButton = document.getElementById('stopButton');
+            var resumeButton = document.getElementById('resumeButton');
+            var isMoving = true;
+
+            stopButton.addEventListener('click', function() {
+                isMoving = false;
+                anim.stop();
+            });
+
+            resumeButton.addEventListener('click', function() {
+                isMoving = true;
+                anim.start();
+            });
+
+            // Variables de velocidad
+            var velocidadX = 2;
+            var velocidadY = 2;
+
+            // Animacion del circulo para que se mueva
+            var anim = new Konva.Animation(function(frame) {
+                if (isMoving) {
+                    var pos = circulo.position();
+                    var newX = pos.x + velocidadX;
+                    var newY = pos.y + velocidadY;
+
+                    // Asegurarse de que el círculo no se salga del lienzo
+                    if (newX - circulo.radius() < 0 || newX + circulo.radius() > lienzo.width()) {
+                        velocidadX = -velocidadX;
+                    }
+                    if (newY - circulo.radius() < 0 || newY + circulo.radius() > lienzo.height()) {
+                        velocidadY = -velocidadY;
+                    }
+
+                    circulo.position({ x: newX, y: newY });
+                }
+            }, capaLienzo);
+
+            anim.start();
+        </script>
+    </body>
+</html>

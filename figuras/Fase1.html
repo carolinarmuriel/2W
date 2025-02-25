@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Konva</title>
+        <!-- Implementamos la libreria de Konva -->
+        <script src="https://unpkg.com/konva@9/konva.min.js"></script>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+                background-color: #f0f0f0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+            }
+            #lienzo {
+                background-color: #e0e0e0;
+                width: 80%;
+                height: 80%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border: 2px solid #ccc;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                position: relative;
+            }
+            #figuras {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+            .button-container {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+            }
+            .button-stage {
+                display: inline-block;
+                margin: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="lienzo">
+            <div id="figuras"></div>
+        </div>
+        <script>
+            // Lienzo principal
+            const lienzo = new Konva.Stage({
+                container: 'figuras',
+                width: document.getElementById('figuras').offsetWidth,
+                height: document.getElementById('figuras').offsetHeight
+            });
+
+            // Capa para las figuras
+            const capaFiguras = new Konva.Layer();
+            lienzo.add(capaFiguras);
+
+            // Crear circulo
+            var circulo = new Konva.Circle({
+                x: 200,
+                y: 200,
+                radius: 30,
+                fill: 'red',
+                draggable: true
+            });
+            capaFiguras.add(circulo);
+
+            // Crear cuadrado
+            var cuadrado = new Konva.Rect({
+                x: 100,
+                y: 100,
+                width: 50,
+                height: 50,
+                fill: 'blue',
+                draggable: true
+            });
+            capaFiguras.add(cuadrado);
+
+            capaFiguras.draw();
+
+            var isMoving = false;
+
+            // Crear botón de parar
+            const stopButtonStage = new Konva.Stage({
+                container: 'lienzo',
+                width: 120,
+                height: 60
+            });
+            const stopButtonLayer = new Konva.Layer();
+            stopButtonStage.add(stopButtonLayer);
+            var stopButtonGroup = new Konva.Group({
+                x: 10,
+                y: 10,
+                draggable: true
+            });
+            var stopButton = new Konva.Rect({
+                width: 100,
+                height: 50,
+                fill: '#4CAF50',
+                cornerRadius: 5,
+                shadowBlur: 10,
+                shadowColor: 'black',
+                shadowOffset: { x: 5, y: 5 },
+                shadowOpacity: 0.5
+            });
+            var stopButtonText = new Konva.Text({
+                width: 100,
+                height: 50,
+                text: 'Parar',
+                fontSize: 20,
+                fontFamily: 'Calibri',
+                fill: 'white',
+                align: 'center',
+                verticalAlign: 'middle'
+            });
+            stopButtonGroup.add(stopButton);
+            stopButtonGroup.add(stopButtonText);
+            stopButtonLayer.add(stopButtonGroup);
+            stopButtonLayer.draw();
+
+            stopButtonGroup.on('click', function() {
+                isMoving = false;
+                anim.stop();
+            });
+
+            // Crear botón de reanudar
+            const resumeButtonStage = new Konva.Stage({
+                container: 'lienzo',
+                width: 120,
+                height: 60
+            });
+            const resumeButtonLayer = new Konva.Layer();
+            resumeButtonStage.add(resumeButtonLayer);
+            var resumeButtonGroup = new Konva.Group({
+                x: 10,
+                y: 80,
+                draggable: true
+            });
+            var resumeButton = new Konva.Rect({
+                width: 100,
+                height: 50,
+                fill: '#4CAF50',
+                cornerRadius: 5,
+                shadowBlur: 10,
+                shadowColor: 'black',
+                shadowOffset: { x: 5, y: 5 },
+                shadowOpacity: 0.5
+            });
+            var resumeButtonText = new Konva.Text({
+                width: 100,
+                height: 50,
+                text: 'Reanudar',
+                fontSize: 20,
+                fontFamily: 'Calibri',
+                fill: 'white',
+                align: 'center',
+                verticalAlign: 'middle'
+            });
+            resumeButtonGroup.add(resumeButton);
+            resumeButtonGroup.add(resumeButtonText);
+            resumeButtonLayer.add(resumeButtonGroup);
+            resumeButtonLayer.draw();
+
+            resumeButtonGroup.on('click', function() {
+                isMoving = true;
+                anim.start();
+            });
+
+            // Variables de velocidad
+            var velocidadX = 2;
+            var velocidadY = 2;
+
+            // Función para crear una nueva figura en movimiento
+            function crearFiguraEnMovimiento(figura) {
+                var nuevaFigura = figura.clone({
+                    x: figura.x(),
+                    y: figura.y(),
+                    draggable: true
+                });
+                nuevaFigura.on('dragmove', function() {
+                    var pos = nuevaFigura.position();
+                    nuevaFigura.position({
+                        x: pos.x,
+                        y: pos.y
+                    });
+                    capaFiguras.draw();
+                });
+                capaFiguras.add(nuevaFigura);
+                capaFiguras.draw();
+
+                var anim = new Konva.Animation(function(frame) {
+                    var pos = nuevaFigura.position();
+                    var newX = pos.x + velocidadX;
+                    var newY = pos.y + velocidadY;
+
+                    if (newX - nuevaFigura.radius() < 0 || newX + nuevaFigura.radius() > lienzo.width()) {
+                        velocidadX = -velocidadX;
+                    }
+                    if (newY - nuevaFigura.radius() < 0 || newY + nuevaFigura.radius() > lienzo.height()) {
+                        velocidadY = -velocidadY;
+                    }
+
+                    nuevaFigura.position({ x: newX, y: newY });
+                }, capaFiguras);
+
+                anim.start();
+            }
+
+            // Permitir que las figuras se arrastren fuera del lienzo
+            circulo.on('dragend', function() {
+                var pos = circulo.position();
+                if (pos.x < 0 || pos.x > lienzo.width() || pos.y < 0 || pos.y > lienzo.height()) {
+                    crearFiguraEnMovimiento(circulo);
+                }
+            });
+
+            cuadrado.on('dragend', function() {
+                var pos = cuadrado.position();
+                if (pos.x < 0 || pos.x > lienzo.width() || pos.y < 0 || pos.y > lienzo.height()) {
+                    crearFiguraEnMovimiento(cuadrado);
+                }
+            });
+        </script>
+    </body>
+</html>
