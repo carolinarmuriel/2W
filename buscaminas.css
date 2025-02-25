@@ -1,0 +1,95 @@
+/* Estilos generales */
+body {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+#tablero {
+    display: grid;
+    gap: 2px;
+    margin-top: 20px;
+    border: 2px solid #333;
+    background-color: #fff;
+}
+
+.celda {
+    width: 30px;
+    height: 30px;
+    background-color: #ccc;
+    border: 1px solid #999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.5s ease, transform 0.2s ease;
+}
+
+.celda.revelada {
+    background-color: #fff;
+}
+
+.celda.mina {
+    background-color: red;
+    background-image: url('img/explosion.png');
+    background-size: cover;
+}
+
+.celda:active {
+    transform: scale(0.95);
+}
+
+/* Botones */
+button {
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+button#nivelFacil {
+    background-color: #4CAF50;
+    color: white;
+}
+
+button#nivelMedio {
+    background-color: #FF9800;
+    color: white;
+}
+
+button#nivelDificil {
+    background-color: #f44336;
+    color: white;
+}
+
+button#reiniciar {
+    background-color: #2196F3;
+    color: white;
+}
+
+button#ayuda {
+    background-color: #9C27B0;
+    color: white;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+/* Temporizador y contador de clics */
+span {
+    font-size: 18px;
+    margin: 10px;
+}
